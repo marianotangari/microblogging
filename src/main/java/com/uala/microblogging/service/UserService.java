@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.uala.microblogging.entity.User;
 import com.uala.microblogging.repository.PostRepository;
@@ -21,7 +20,6 @@ public class UserService {
     private final PostRepository postRepository;
     private final RedisService   redisService;
 
-    @Transactional
     public User create(final User user) {
         return userRepository.save(user);
     }

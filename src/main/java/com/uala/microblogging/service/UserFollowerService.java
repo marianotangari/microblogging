@@ -1,7 +1,6 @@
 package com.uala.microblogging.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.uala.microblogging.entity.UserFollower;
 import com.uala.microblogging.repository.UserFollowerRepository;
@@ -16,7 +15,6 @@ public class UserFollowerService {
     private final UserRepository         userRepository;
     private final UserFollowerRepository userFollowerRepository;
 
-    @Transactional
     public void create(final UserFollower userFollower) {
 
         validateUsersExist(userFollower.getUserId(), userFollower.getFollowerUserId());
