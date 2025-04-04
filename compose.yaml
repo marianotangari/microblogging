@@ -1,0 +1,44 @@
+services:
+  product-server:
+    container_name: microblogging-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: microblogging-app:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - spring-cloud-network
+    environment:
+      - SPRING_REDIS_HOST=redis
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - 6379:6379
+    networks:
+      - spring-cloud-network
+  rabbitmq:
+    container_name: rabbitmq
+    image: 'rabbitmq:latest'
+    environment:
+      - 'RABBITMQ_DEFAULT_PASS=guest'
+      - 'RABBITMQ_DEFAULT_USER=guest'
+    ports:
+      - 15672:15672
+      - 5672:5672
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 20s
+    networks:
+      - spring-cloud-network
+
+networks:
+  spring-cloud-network:
+    driver: bridge
