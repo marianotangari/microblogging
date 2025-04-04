@@ -20,15 +20,6 @@ public class RabbitMQConfiguration {
     static final String EXCHANGE_NAME = "MicrobloggingExchange";
     static final String ROUTING_KEY = "routing_key";
 
-    @Value("${spring.rabbitmq.template.default-receive-queue}")
-    private String queueName;
-
-    @Value("${spring.rabbitmq.template.exchange}")
-    private String exchangeName;
-
-    @Value("${spring.rabbitmq.template.routing-key}")
-    private String routingKey;
-
     @Value("${spring.rabbitmq.host}")
     private String host;
 
