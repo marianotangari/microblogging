@@ -18,10 +18,10 @@ import com.uala.microblogging.repository.UserFollowerRepository;
 import com.uala.microblogging.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class UserFollowerServiceTest {
+public class UserServiceTest {
 
     @InjectMocks
-    private UserFollowerService userFollowerService;
+    private UserService userService;
 
     @Mock
     private UserFollowerRepository userFollowerRepository;
@@ -30,37 +30,37 @@ public class UserFollowerServiceTest {
     private UserRepository userRepository;
 
     @Test
-    public void create_whenUserIdOrFollowerIdIsDoNotExist_thenReturnBadRequest() {
+    public void createFollower_whenUserIdOrFollowerIdIsDoNotExist_thenReturnBadRequest() {
 
         final UserFollower userFollower = UserFollower.builder().userId(1L).followerUserId(2L).build();
 
         when(userRepository.existsById(Mockito.anyLong())).thenReturn(false);
 
-        final ResponseEntity<String> response = userFollowerService.create(userFollower);
+        final ResponseEntity<String> response = userService.createFollower(userFollower);
 
         assertEquals(400, response.getStatusCode().value());
         verify(userRepository, Mockito.times(1)).existsById(Mockito.anyLong());
     }
 
     @Test
-    public void create_whenUserIdOrFollowerIdAreEqual_thenReturnBadRequest() {
+    public void createFollower_whenUserIdOrFollowerIdAreEqual_thenReturnBadRequest() {
 
         final UserFollower userFollower = UserFollower.builder().userId(1L).followerUserId(1L).build();
 
-        final ResponseEntity<String> response = userFollowerService.create(userFollower);
+        final ResponseEntity<String> response = userService.createFollower(userFollower);
 
         assertEquals(400, response.getStatusCode().value());
         verify(userRepository, never()).existsById(Mockito.anyLong());
     }
 
     @Test
-    public void create_whenUserIdOrFollowerIdExistAndNotEqual_thenReturnOk() {
+    public void createFollower_whenUserIdOrFollowerIdExistAndNotEqual_thenReturnOk() {
 
         final UserFollower userFollower = UserFollower.builder().userId(1L).followerUserId(2L).build();
 
         when(userRepository.existsById(Mockito.anyLong())).thenReturn(true);
 
-        final ResponseEntity<String> response = userFollowerService.create(userFollower);
+        final ResponseEntity<String> response = userService.createFollower(userFollower);
 
         assertEquals(200, response.getStatusCode().value());
         verify(userRepository, Mockito.times(2)).existsById(Mockito.anyLong());

@@ -2,6 +2,8 @@ package com.uala.microblogging.service;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.uala.microblogging.response.CreatePostResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.uala.microblogging.entity.Post;
@@ -20,20 +22,18 @@ public class PostService{
     private final UserRepository                         userRepository;
     private final RabbitMQTimelineProducer<TimelinePost> rabbitMQTimelineProducer;
 
-    public Post create(final Post post) {
+    public ResponseEntity<?> create(final Post post) {
 
-        validateUserExists(post.getCreatedBy());
+        final Long userId = post.getCreatedBy();
+
+        if (!userRepository.existsById(userId)) {
+            return ResponseEntity.badRequest().body("User with id %s does not exist".formatted(userId));
+        }
 
         final Post createdPost = postRepository.save(post);
 
         CompletableFuture.runAsync(() -> rabbitMQTimelineProducer.sendMessage(TimelinePost.from(createdPost)));
 
-        return createdPost;
-    }
-
-    private void validateUserExists(Long userId) {
-       if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("User with id %s does not exist".formatted(userId));
-       }
+        return ResponseEntity.ok().body(CreatePostResponse.from(createdPost));
     }
 }
