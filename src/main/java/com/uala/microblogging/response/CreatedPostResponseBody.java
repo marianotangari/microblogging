@@ -7,10 +7,10 @@ import com.uala.microblogging.entity.Post;
 import lombok.Builder;
 
 @Builder
-public record CreatePostResponse(Long id, Long createdBy, LocalDateTime createdAt, String content) {
+public record CreatedPostResponseBody(Long id, Long createdBy, LocalDateTime createdAt, String content) {
 
-    public static CreatePostResponse from(final Post post) {
-        return CreatePostResponse.builder()
+    public static CreatedPostResponseBody from(final Post post) {
+        return CreatedPostResponseBody.builder()
             .id(post.getId())
             .createdBy(post.getCreatedBy())
             .createdAt(post.getCreatedAt())

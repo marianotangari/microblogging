@@ -5,14 +5,15 @@ import java.util.List;
 
 import com.uala.microblogging.entity.UserFollower;
 import com.uala.microblogging.repository.UserFollowerRepository;
-import com.uala.microblogging.response.CreateUserResponse;
+import com.uala.microblogging.response.CreatedUserResponseBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.uala.microblogging.entity.User;
 import com.uala.microblogging.repository.PostRepository;
 import com.uala.microblogging.repository.UserRepository;
-import com.uala.microblogging.response.CreatePostResponse;
+import com.uala.microblogging.response.CreatedPostResponseBody;
+import com.uala.microblogging.response.ResponseBody;
 
 import lombok.AllArgsConstructor;
 
@@ -29,7 +30,7 @@ public class UserService {
 
         final User createdUser = userRepository.save(user);
 
-        return ResponseEntity.ok(CreateUserResponse.from(createdUser));
+        return ResponseEntity.ok(CreatedUserResponseBody.from(createdUser));
     }
 
     public ResponseEntity<?> getTimeline(final Long userId) {
@@ -43,35 +44,35 @@ public class UserService {
             return ResponseEntity.ok(findPostsInDatabase(userId));
         }
 
-        List<CreatePostResponse> postResponses = new ArrayList<>();
+        List<CreatedPostResponseBody> postResponses = new ArrayList<>();
 
-        postRepository.findAllById(postIds).forEach(post -> postResponses.add(CreatePostResponse.from(post)));
+        postRepository.findAllById(postIds).forEach(post -> postResponses.add(CreatedPostResponseBody.from(post)));
 
         return ResponseEntity.ok(postResponses);
     }
 
-    public ResponseEntity<String> createFollower(final UserFollower userFollower) {
+    public ResponseEntity<?> createFollower(final UserFollower userFollower) {
 
         final Long userId = userFollower.getUserId();
         final Long followerUserId = userFollower.getFollowerUserId();
 
         if (validateUserIds(userId, followerUserId)) {
-            return ResponseEntity.badRequest().body("Invalid user and follower ids");
+            return ResponseEntity.badRequest().body(new ResponseBody("Invalid user and follower ids"));
         }
 
         userFollowerRepository.save(userFollower);
 
-        return ResponseEntity.ok("Follower successfully created");
+        return ResponseEntity.ok(new ResponseBody("Follower successfully created"));
     }
 
     private boolean validateUserIds(final Long userId, final Long followerUserId) {
         return userId.longValue() == followerUserId.longValue() || !userRepository.existsById(userId) || !userRepository.existsById(followerUserId);
     }
 
-    private List<CreatePostResponse> findPostsInDatabase(final Long userId) {
+    private List<CreatedPostResponseBody> findPostsInDatabase(final Long userId) {
         return postRepository.findAllPostsFromFollowedUsers(userId)
             .stream()
-            .map(CreatePostResponse::from)
+            .map(CreatedPostResponseBody::from)
             .toList();
     }
 }

@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/follow")
-    public ResponseEntity<String> followUser(final @RequestBody @Valid CreateFollowerUserRequest createFollowerUserRequest) {
+    public ResponseEntity<?> followUser(final @RequestBody @Valid CreateFollowerUserRequest createFollowerUserRequest) {
         return userService.createFollower(createFollowerUserRequest.toUserFollower());
     }
 

@@ -36,7 +36,7 @@ public class UserServiceTest {
 
         when(userRepository.existsById(Mockito.anyLong())).thenReturn(false);
 
-        final ResponseEntity<String> response = userService.createFollower(userFollower);
+        final ResponseEntity<?> response = userService.createFollower(userFollower);
 
         assertEquals(400, response.getStatusCode().value());
         verify(userRepository, Mockito.times(1)).existsById(Mockito.anyLong());
@@ -47,7 +47,7 @@ public class UserServiceTest {
 
         final UserFollower userFollower = UserFollower.builder().userId(1L).followerUserId(1L).build();
 
-        final ResponseEntity<String> response = userService.createFollower(userFollower);
+        final ResponseEntity<?> response = userService.createFollower(userFollower);
 
         assertEquals(400, response.getStatusCode().value());
         verify(userRepository, never()).existsById(Mockito.anyLong());
@@ -60,7 +60,7 @@ public class UserServiceTest {
 
         when(userRepository.existsById(Mockito.anyLong())).thenReturn(true);
 
-        final ResponseEntity<String> response = userService.createFollower(userFollower);
+        final ResponseEntity<?> response = userService.createFollower(userFollower);
 
         assertEquals(200, response.getStatusCode().value());
         verify(userRepository, Mockito.times(2)).existsById(Mockito.anyLong());

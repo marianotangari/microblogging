@@ -10,5 +10,5 @@ import com.uala.microblogging.entity.UserFollower;
 @Repository
 public interface UserFollowerRepository extends CrudRepository<UserFollower, Long> {
 
-    List<Long> findUserFollowersByUserId(Long userId);
+    List<UserFollower> findUserFollowersByUserId(Long userId);
 }

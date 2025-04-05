@@ -5,10 +5,10 @@ import com.uala.microblogging.entity.User;
 import lombok.Builder;
 
 @Builder
-public record CreateUserResponse(Long id, String username) {
+public record CreatedUserResponseBody(Long id, String username) {
 
-    public static CreateUserResponse from(final User user) {
-        return CreateUserResponse.builder()
+    public static CreatedUserResponseBody from(final User user) {
+        return CreatedUserResponseBody.builder()
             .id(user.getId())
             .username(user.getUsername())
             .build();

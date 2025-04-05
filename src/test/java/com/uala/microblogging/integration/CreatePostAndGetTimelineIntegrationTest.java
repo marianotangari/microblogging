@@ -26,7 +26,8 @@ import com.redis.testcontainers.RedisContainer;
 import com.uala.microblogging.request.CreateFollowerUserRequest;
 import com.uala.microblogging.request.CreatePostRequest;
 import com.uala.microblogging.request.CreateUserRequest;
-import com.uala.microblogging.response.CreateUserResponse;
+import com.uala.microblogging.response.CreatedUserResponseBody;
+import com.uala.microblogging.response.ResponseBody;
 
 import lombok.SneakyThrows;
 
@@ -61,7 +62,7 @@ public class CreatePostAndGetTimelineIntegrationTest {
     void createPostAndGetTimelineTest() {
 
         final CreateUserRequest createUserRequest = CreateUserRequest.builder().username("TestUser").build();
-        final CreateUserResponse createUserResponse = CreateUserResponse.builder().id(4L).username("TestUser").build();
+        final CreatedUserResponseBody createdUserResponseBody = CreatedUserResponseBody.builder().id(4L).username("TestUser").build();
 
         mockMvc.perform(
                 post("/users")
@@ -69,9 +70,10 @@ public class CreatePostAndGetTimelineIntegrationTest {
                     .content(objectMapper.writeValueAsString(createUserRequest))
             )
             .andDo(print()).andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(createUserResponse)));
+            .andExpect(content().json(objectMapper.writeValueAsString(createdUserResponseBody)));
 
         final CreateFollowerUserRequest createFollowerUserRequest = CreateFollowerUserRequest.builder().userId(4L).followerId(1L).build();
+        final ResponseBody  responseBody = new ResponseBody("Follower successfully created");
 
         mockMvc.perform(
                 post("/users/follow")
@@ -79,7 +81,7 @@ public class CreatePostAndGetTimelineIntegrationTest {
                     .content(objectMapper.writeValueAsString(createFollowerUserRequest))
             )
             .andDo(print()).andExpect(status().isOk())
-            .andExpect(content().string("Follower successfully created"));
+            .andExpect(content().json(objectMapper.writeValueAsString(responseBody)));
 
         final CreatePostRequest createPostRequest = CreatePostRequest.builder().createdBy(4L).content("My Post").build();
 

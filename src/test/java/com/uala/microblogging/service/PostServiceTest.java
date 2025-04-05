@@ -5,12 +5,11 @@ import com.uala.microblogging.rabbitmq.RabbitMQTimelineProducer;
 import com.uala.microblogging.rabbitmq.TimelinePost;
 import com.uala.microblogging.repository.PostRepository;
 import com.uala.microblogging.repository.UserRepository;
-import com.uala.microblogging.response.CreatePostResponse;
+import com.uala.microblogging.response.CreatedPostResponseBody;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,13 +50,15 @@ public class PostServiceTest {
         final ResponseEntity<?> response = postService.create(postRequest);
 
         assertSame(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        verify(userRepository, Mockito.times(1)).existsById(1L);
+        verify(userRepository, times(1)).existsById(1L);
+        verify(postRepository, never()).save(postRequest);
+        verify(rabbitMQTimelineProducer, never()).sendMessage(any());
     }
 
     @Test
     void create_whenUserExists_returnOk() {
 
-        final CreatePostResponse postResponse = CreatePostResponse.from(postRequest);
+        final CreatedPostResponseBody postResponse = CreatedPostResponseBody.from(postRequest);
 
         when(userRepository.existsById(1L)).thenReturn(true);
         when(postRepository.save(postRequest)).thenReturn(postRequest);
@@ -64,8 +67,8 @@ public class PostServiceTest {
 
         assertSame(HttpStatus.OK, response.getStatusCode());
         assertEquals(postResponse, response.getBody());
-        verify(userRepository, Mockito.times(1)).existsById(1L);
-        verify(postRepository, Mockito.times(1)).save(postRequest);
-        verify(rabbitMQTimelineProducer, Mockito.times(1)).sendMessage(any());
+        verify(userRepository, times(1)).existsById(1L);
+        verify(postRepository, times(1)).save(postRequest);
+        verify(rabbitMQTimelineProducer, times(1)).sendMessage(any());
     }
 }
