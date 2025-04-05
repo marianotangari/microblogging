@@ -10,7 +10,7 @@ import com.uala.microblogging.entity.Post;
 import lombok.Builder;
 
 @Builder
-public record CreatePostRequest(@NotNull Long createdBy, @Size(min = 1, max = 280) String content) {
+public record CreatePostRequest(@NotNull Long createdBy, @NotNull @Size(min = 1, max = 280) String content) {
 
     public Post toPost() {
         return Post.builder()

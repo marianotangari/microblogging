@@ -40,9 +40,7 @@ public class UserController {
     @PostMapping(value = "/follow")
     public ResponseEntity<String> followUser(final @RequestBody @Valid CreateFollowerUserRequest createFollowerUserRequest) {
 
-        userFollowerService.create(createFollowerUserRequest.toUserFollower());
-
-        return ResponseEntity.ok("Follower successfully created");
+        return userFollowerService.create(createFollowerUserRequest.toUserFollower());
     }
 
     @GetMapping("/{userId}/timeline")

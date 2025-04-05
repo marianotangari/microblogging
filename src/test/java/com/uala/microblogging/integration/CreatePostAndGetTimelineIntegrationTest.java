@@ -1,4 +1,4 @@
-package com.uala.microblogging;
+package com.uala.microblogging.integration;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
