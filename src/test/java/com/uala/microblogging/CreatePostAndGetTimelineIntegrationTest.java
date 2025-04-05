@@ -9,14 +9,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -71,19 +69,17 @@ public class CreatePostAndGetTimelineIntegrationTest {
                     .content(objectMapper.writeValueAsString(createUserRequest))
             )
             .andDo(print()).andExpect(status().isOk())
-            .andExpect(
-                content().json(objectMapper.writeValueAsString(createUserResponse)));
+            .andExpect(content().json(objectMapper.writeValueAsString(createUserResponse)));
 
         final CreateFollowerUserRequest createFollowerUserRequest = CreateFollowerUserRequest.builder().userId(4L).followerId(1L).build();
 
-        MvcResult requestResult = mockMvc.perform(
+        mockMvc.perform(
                 post("/users/follow")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(createFollowerUserRequest))
             )
-            .andDo(print()).andExpect(status().isOk()).andReturn();
-
-        assertEquals(0, requestResult.getResponse().getContentLength());
+            .andDo(print()).andExpect(status().isOk())
+            .andExpect(content().string("Follower successfully created"));
 
         final CreatePostRequest createPostRequest = CreatePostRequest.builder().createdBy(4L).content("My Post").build();
 

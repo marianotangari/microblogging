@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uala.microblogging.entity.User;
-import com.uala.microblogging.entity.UserFollower;
 import com.uala.microblogging.request.CreateUserRequest;
 import com.uala.microblogging.request.CreateFollowerUserRequest;
 import com.uala.microblogging.response.CreatePostResponse;
@@ -39,11 +38,11 @@ public class UserController {
     }
 
     @PostMapping(value = "/follow")
-    public ResponseEntity<UserFollower> followUser(final @RequestBody @Valid CreateFollowerUserRequest createFollowerUserRequest) {
+    public ResponseEntity<String> followUser(final @RequestBody @Valid CreateFollowerUserRequest createFollowerUserRequest) {
 
         userFollowerService.create(createFollowerUserRequest.toUserFollower());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Follower successfully created");
     }
 
     @GetMapping("/{userId}/timeline")
