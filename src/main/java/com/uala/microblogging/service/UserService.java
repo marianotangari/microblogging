@@ -35,6 +35,10 @@ public class UserService {
 
     public ResponseEntity<?> getTimeline(final Long userId) {
 
+        if (!userRepository.existsById(userId)) {
+            return ResponseEntity.badRequest().body(new ResponseBody("User with id %s does not exist".formatted(userId)));
+        }
+
         List<Long> postIds = redisService.getAllPostIds(userId)
             .stream()
             .map(Long::parseLong)
