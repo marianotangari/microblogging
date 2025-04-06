@@ -34,6 +34,7 @@ public class PostService{
 
         final Post createdPost = postRepository.save(postRequest.toPost());
 
+        //Sending post metadata to RabbitMQ asynchronously in order to feed the user followers' timelines.
         CompletableFuture.runAsync(() -> rabbitMQTimelineProducer.sendMessage(TimelinePost.from(createdPost)));
 
         return ResponseEntity.ok().body(CreatedPostResponseBody.from(createdPost));
