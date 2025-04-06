@@ -22,6 +22,6 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<?> create(final @RequestBody @Valid CreatePostRequest postRequest) {
-        return postService.create(postRequest.toPost());
+        return postService.create(postRequest);
     }
 }

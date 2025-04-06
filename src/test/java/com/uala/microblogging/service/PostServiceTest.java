@@ -5,6 +5,7 @@ import com.uala.microblogging.rabbitmq.RabbitMQTimelineProducer;
 import com.uala.microblogging.rabbitmq.TimelinePost;
 import com.uala.microblogging.repository.PostRepository;
 import com.uala.microblogging.repository.UserRepository;
+import com.uala.microblogging.request.CreatePostRequest;
 import com.uala.microblogging.response.CreatedPostResponseBody;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +38,7 @@ public class PostServiceTest {
     @Mock
     private RabbitMQTimelineProducer<TimelinePost> rabbitMQTimelineProducer;
 
-    private final Post postRequest = Post.builder()
+    private final CreatePostRequest postRequest = CreatePostRequest.builder()
             .createdBy(1L)
             .content("Dummy Post")
             .build();
@@ -51,24 +52,25 @@ public class PostServiceTest {
 
         assertSame(HttpStatus.BAD_REQUEST, response.getStatusCode());
         verify(userRepository, times(1)).existsById(1L);
-        verify(postRepository, never()).save(postRequest);
+        verify(postRepository, never()).save(postRequest.toPost());
         verify(rabbitMQTimelineProducer, never()).sendMessage(any());
     }
 
     @Test
     void create_whenUserExists_returnOk() {
 
-        final CreatedPostResponseBody postResponse = CreatedPostResponseBody.from(postRequest);
+        final Post post = postRequest.toPost();
+        final CreatedPostResponseBody postResponse = CreatedPostResponseBody.from(post);
 
         when(userRepository.existsById(1L)).thenReturn(true);
-        when(postRepository.save(postRequest)).thenReturn(postRequest);
+        when(postRepository.save(any())).thenReturn(post);
 
         final ResponseEntity<?> response = postService.create(postRequest);
 
         assertSame(HttpStatus.OK, response.getStatusCode());
         assertEquals(postResponse, response.getBody());
         verify(userRepository, times(1)).existsById(1L);
-        verify(postRepository, times(1)).save(postRequest);
+        verify(postRepository, times(1)).save(any());
         verify(rabbitMQTimelineProducer, times(1)).sendMessage(any());
     }
 }

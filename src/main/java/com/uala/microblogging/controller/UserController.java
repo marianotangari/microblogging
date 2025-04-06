@@ -25,12 +25,12 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> create(final @RequestBody @Valid CreateUserRequest userRequest) {
-        return userService.create(userRequest.toUser());
+        return userService.create(userRequest);
     }
 
     @PostMapping(value = "/follow")
     public ResponseEntity<?> followUser(final @RequestBody @Valid CreateFollowerUserRequest createFollowerUserRequest) {
-        return userService.createFollower(createFollowerUserRequest.toUserFollower());
+        return userService.createFollower(createFollowerUserRequest);
     }
 
     @GetMapping("/{userId}/timeline")

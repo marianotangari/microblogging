@@ -6,6 +6,8 @@ import java.util.List;
 import com.uala.microblogging.entity.Post;
 import com.uala.microblogging.entity.UserFollower;
 import com.uala.microblogging.repository.UserFollowerRepository;
+import com.uala.microblogging.request.CreateFollowerUserRequest;
+import com.uala.microblogging.request.CreateUserRequest;
 import com.uala.microblogging.response.CreatedUserResponseBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,9 +29,9 @@ public class UserService {
     private final UserFollowerRepository userFollowerRepository;
     private final RedisService   redisService;
 
-    public ResponseEntity<?> create(final User user) {
+    public ResponseEntity<?> create(final CreateUserRequest createUserRequest) {
 
-        final User createdUser = userRepository.save(user);
+        final User createdUser = userRepository.save(createUserRequest.toUser());
 
         return ResponseEntity.ok(CreatedUserResponseBody.from(createdUser));
     }
@@ -56,8 +58,9 @@ public class UserService {
         return ResponseEntity.ok(postResponses);
     }
 
-    public ResponseEntity<?> createFollower(final UserFollower userFollower) {
+    public ResponseEntity<?> createFollower(final CreateFollowerUserRequest createFollowerUserRequest) {
 
+        final UserFollower userFollower = createFollowerUserRequest.toUserFollower();
         final Long userId = userFollower.getUserId();
         final Long followerUserId = userFollower.getFollowerUserId();
 

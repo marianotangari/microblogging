@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -17,10 +18,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.uala.microblogging.entity.Post;
-import com.uala.microblogging.entity.UserFollower;
 import com.uala.microblogging.repository.PostRepository;
 import com.uala.microblogging.repository.UserFollowerRepository;
 import com.uala.microblogging.repository.UserRepository;
+import com.uala.microblogging.request.CreateFollowerUserRequest;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -43,41 +44,41 @@ public class UserServiceTest {
     @Test
     public void createFollower_whenUserIdOrFollowerIdIsDoNotExist_thenReturnBadRequest() {
 
-        final UserFollower userFollower = UserFollower.builder().userId(1L).followerUserId(2L).build();
+        final CreateFollowerUserRequest followerUserRequest = CreateFollowerUserRequest.builder().userId(1L).followerId(2L).build();
 
         when(userRepository.existsById(anyLong())).thenReturn(false);
 
-        final ResponseEntity<?> response = userService.createFollower(userFollower);
+        final ResponseEntity<?> response = userService.createFollower(followerUserRequest);
 
         assertEquals(400, response.getStatusCode().value());
         verify(userRepository, times(1)).existsById(anyLong());
-        verify(userFollowerRepository, never()).save(userFollower);
+        verify(userFollowerRepository, never()).save(followerUserRequest.toUserFollower());
     }
 
     @Test
     public void createFollower_whenUserIdOrFollowerIdAreEqual_thenReturnBadRequest() {
 
-        final UserFollower userFollower = UserFollower.builder().userId(1L).followerUserId(1L).build();
+        final CreateFollowerUserRequest followerUserRequest = CreateFollowerUserRequest.builder().userId(1L).followerId(1L).build();
 
-        final ResponseEntity<?> response = userService.createFollower(userFollower);
+        final ResponseEntity<?> response = userService.createFollower(followerUserRequest);
 
         assertEquals(400, response.getStatusCode().value());
         verify(userRepository, never()).existsById(anyLong());
-        verify(userFollowerRepository, never()).save(userFollower);
+        verify(userFollowerRepository, never()).save(followerUserRequest.toUserFollower());
     }
 
     @Test
     public void createFollower_whenUserIdOrFollowerIdExistAndNotEqual_thenReturnOk() {
 
-        final UserFollower userFollower = UserFollower.builder().userId(1L).followerUserId(2L).build();
+        final CreateFollowerUserRequest followerUserRequest = CreateFollowerUserRequest.builder().userId(1L).followerId(2L).build();
 
         when(userRepository.existsById(anyLong())).thenReturn(true);
 
-        final ResponseEntity<?> response = userService.createFollower(userFollower);
+        final ResponseEntity<?> response = userService.createFollower(followerUserRequest);
 
         assertEquals(200, response.getStatusCode().value());
         verify(userRepository, times(2)).existsById(anyLong());
-        verify(userFollowerRepository, times(1)).save(userFollower);
+        verify(userFollowerRepository, times(1)).save(any());
     }
 
     @Test
