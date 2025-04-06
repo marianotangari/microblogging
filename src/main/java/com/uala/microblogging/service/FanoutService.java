@@ -24,6 +24,6 @@ public class FanoutService {
                 .map(UserFollower::getFollowerUserId)
                 .toList();
 
-        redisService.addPostIdToTimeline(userIds, String.valueOf(timelinePost.postId()));
+        redisService.addPostIdToUsersTimeline(userIds, timelinePost.postId());
     }
 }

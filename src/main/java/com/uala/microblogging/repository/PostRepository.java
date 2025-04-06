@@ -19,4 +19,6 @@ public interface PostRepository extends CrudRepository<Post, Long> {
         WHERE uf.follower_user_id = :userId
         """)
     List<Post> findAllPostsFromFollowedUsers(final @Param("userId") Long userId);
+
+    List<Post> findAllByCreatedBy(final Long createdBy);
 }

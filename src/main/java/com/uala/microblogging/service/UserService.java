@@ -3,6 +3,7 @@ package com.uala.microblogging.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.uala.microblogging.entity.Post;
 import com.uala.microblogging.entity.UserFollower;
 import com.uala.microblogging.repository.UserFollowerRepository;
 import com.uala.microblogging.response.CreatedUserResponseBody;
@@ -66,6 +67,9 @@ public class UserService {
 
         userFollowerRepository.save(userFollower);
 
+        //We feed the timeline with the posts of the recently added followed user
+        addFollowedUserPostsToTimeline(userId, followerUserId);
+
         return ResponseEntity.ok(new ResponseBody("Follower successfully created"));
     }
 
@@ -78,5 +82,16 @@ public class UserService {
             .stream()
             .map(CreatedPostResponseBody::from)
             .toList();
+    }
+
+    private void addFollowedUserPostsToTimeline(final Long userId, final Long followerUserId) {
+
+        List<Long> postIds = postRepository.findAllByCreatedBy(userId).stream()
+            .map(Post::getId)
+            .toList();
+
+        if (!postIds.isEmpty()) {
+            redisService.addPostIdsToUserTimeline(followerUserId, postIds);
+        }
     }
 }

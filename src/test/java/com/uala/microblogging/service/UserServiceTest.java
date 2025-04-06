@@ -51,6 +51,7 @@ public class UserServiceTest {
 
         assertEquals(400, response.getStatusCode().value());
         verify(userRepository, times(1)).existsById(anyLong());
+        verify(userFollowerRepository, never()).save(userFollower);
     }
 
     @Test
@@ -62,6 +63,7 @@ public class UserServiceTest {
 
         assertEquals(400, response.getStatusCode().value());
         verify(userRepository, never()).existsById(anyLong());
+        verify(userFollowerRepository, never()).save(userFollower);
     }
 
     @Test
@@ -75,6 +77,7 @@ public class UserServiceTest {
 
         assertEquals(200, response.getStatusCode().value());
         verify(userRepository, times(2)).existsById(anyLong());
+        verify(userFollowerRepository, times(1)).save(userFollower);
     }
 
     @Test

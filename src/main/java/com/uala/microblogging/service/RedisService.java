@@ -13,8 +13,17 @@ public class RedisService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void addPostIdToTimeline(final List<Long> userIds, final String postId) {
-        userIds.forEach((userId -> redisTemplate.opsForList().leftPush(String.valueOf(userId), postId)));
+    public void addPostIdToUsersTimeline(final List<Long> userIds, final Long postId) {
+        userIds.forEach((userId -> redisTemplate
+            .opsForList()
+            .leftPush(String.valueOf(userId), String.valueOf(postId))));
+    }
+
+    public void addPostIdsToUserTimeline(final Long userId, final List<Long> postIds) {
+
+        final List<String> strPostIds = postIds.stream().map(String::valueOf).toList();
+
+        redisTemplate.opsForList().leftPushAll(String.valueOf(userId), strPostIds);
     }
 
     public List<String> getAllPostIds(final Long userId) {
